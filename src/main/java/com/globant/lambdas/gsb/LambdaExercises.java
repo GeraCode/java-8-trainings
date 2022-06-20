@@ -12,18 +12,19 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LambdaExercises {
 
 
-    static Predicate<User> lessThan30Predicate  = u -> u.getAge() < 30;
+    static Predicate<User> lessThan30Predicate = u -> u.getAge() < 30;
     static Predicate<User> olderThan22Predicate = u -> u.getAge() > 22;
     static Predicate<User> olderThan27Predicate = u -> u.getAge() > 27;
-    static Predicate<User> lessThan25Predicate  = u -> u.getAge() < 25;
+    static Predicate<User> lessThan25Predicate = u -> u.getAge() < 25;
     static Predicate<User> isOddNumberPredicate = u -> u.getAge() % 2 != 0;
 
     static Function<User, Address> userAddressFunction = User::getAddress;
-    static Function<User, List<String>> petsFunction = User::getPets;
+    static Function<User, Stream<String>> petsFunction = user -> user.getPets().stream();
     static Function<List<User>, Map<String, Address>> getMapWithNameAndAddressFunction =
             users -> users.stream()
                     .filter(lessThan30Predicate)
@@ -32,11 +33,9 @@ public class LambdaExercises {
     static Consumer<User> updateAddressConsumer = u -> u.getAddress().setCity("Tokio");
 
     static Consumer<User> namesAgesConsumer = u ->
-            System.out.println(String.format("Name= [%s]/ Age= [%s]  ",
-                    u.getName(), u.getAge()));
+            System.out.println(u.getName());
     static Consumer<User> PetsConsumer = u ->
-            System.out.println(String.format(" Pet [%s] ",
-                    u.getPets()));
+            System.out.println(u.getPets());
     static Supplier<User> newUser = () ->
             new User("Gerardo", "Salvador", 30,
                     new Address("Iztapalapa"), Arrays.asList("dragon", "crocodile"));
@@ -49,10 +48,10 @@ public class LambdaExercises {
 
 
         System.out.println("\nExercise 1 - Obtain a list of users with age > 22 using the Predicate Interface");
-        getExercise1OlderThan22(users).forEach(System.out::println);
+        getExercise1OlderThan22(users);
 
         System.out.println("\nExercise 2 - Obtain a list of users whose age is an odd number and < 25 using Predicate chaining");
-        getExercise2IsOddNumberAndLessThan25Predicate(users).forEach(System.out::println);
+        getExercise2IsOddNumberAndLessThan25Predicate(users);
 
         System.out.println("\nExercise 3 - Obtain the address of the first user in the user list using the Function Interface");
         System.out.println("address.getCity() = " + getExercise3ObtainAddressFunction(users).getCity());
@@ -76,14 +75,12 @@ public class LambdaExercises {
         getExercise9UserLessThan29MethodReference(users);
     }
 
-    public static List<User> getExercise1OlderThan22(List<User> users) {
-        return users.stream().filter(olderThan22Predicate)
-                .collect(Collectors.toList());
+    public static void getExercise1OlderThan22(List<User> users) {
+        users.stream().filter(olderThan22Predicate).forEach(System.out::println);
     }
 
-    public static List<User> getExercise2IsOddNumberAndLessThan25Predicate(List<User> users) {
-        return users.stream().filter(isOddNumberPredicate.and(lessThan25Predicate))
-                .collect(Collectors.toList());
+    public static void getExercise2IsOddNumberAndLessThan25Predicate(List<User> users) {
+        users.stream().filter(isOddNumberPredicate.and(lessThan25Predicate)).forEach(System.out::println);
     }
 
     public static Address getExercise3ObtainAddressFunction(List<User> users) {
@@ -108,7 +105,7 @@ public class LambdaExercises {
     }
 
     public static void getExercise8PetsMethodReference(List<User> users) {
-        users.stream().map(petsFunction).forEach(System.out::println);
+        users.stream().flatMap(petsFunction).forEach(System.out::println);
     }
 
     public static void getExercise9UserLessThan29MethodReference(List<User> users) {
