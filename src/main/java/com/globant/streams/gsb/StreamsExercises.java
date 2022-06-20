@@ -24,15 +24,14 @@ public class StreamsExercises {
     private static final DecimalFormat df = new DecimalFormat("#.##");
 
     static Predicate<Product> productBooksPredicate = p -> p.getCategory().equals("Books");
-    static Predicate<Product> productBooks300Predicate = p -> (p.getCategory().equals("Books") && p.getPrice() > 300);
+    static Predicate<Product> product300Predicate = p ->  p.getPrice() > 300;
     static Predicate<Order> productBabyPredicate = o -> o.getProducts().stream().anyMatch(p -> p.getCategory().equals("Baby"));
     static Predicate<Order> productDate15032021Predicate = order -> order.getOrderDate().isEqual(LocalDate.of(2021, 3, 15));
     static Predicate<Product> productToysPredicate = p -> p.getCategory().equals("Toys");
-    static Predicate<Order> productOrderPredicate = order ->
-            (order.getCustomer().getTier().equals(2)
-                    && (order.getOrderDate().isAfter(LocalDate.of(2021, 2, 1))) &&
-                    (order.getOrderDate().isBefore(LocalDate.of(2021, 4, 1)))
-            );
+    static Predicate<Order> productOrder2Predicate = order ->order.getCustomer().getTier().equals(2);
+    static Predicate<Order> productOrder202121Predicate = order ->order.getOrderDate().isAfter(LocalDate.of(2021, 2, 1));
+    static Predicate<Order> productOrder202141Predicate = order ->order.getOrderDate().isAfter(LocalDate.of(2021, 4, 1));
+
     static Consumer<Product> productPricesDiscountConsumer = p -> p.setPrice(Double.valueOf(df.format((p.getPrice() - (p.getPrice() * 0.10)))));
 
 
@@ -93,7 +92,7 @@ public class StreamsExercises {
 
     public static List<Product> exercise1(List<Product> productList) {
         return productList.stream()
-                .filter(productBooks300Predicate)
+                .filter(productBooksPredicate.and(product300Predicate))
                 .collect(Collectors.toList());
     }
 
@@ -111,7 +110,7 @@ public class StreamsExercises {
 
     public static List<Product> exercise4(List<Order> orderList) {
         return orderList.stream()
-                .filter(productOrderPredicate)
+                .filter(productOrder2Predicate.and(productOrder202121Predicate).and(productOrder202141Predicate))
                 .flatMap(order -> order.getProducts().stream())
                 .distinct()
                 .collect(Collectors.toList());
@@ -130,16 +129,19 @@ public class StreamsExercises {
                 .collect(Collectors.toList());
     }
 
-    static List<Order> exercise7(List<Order> orderList) {
+    static List<Product> exercise7(List<Order> orderList) {
         return orderList.stream()
                 .filter(productDate15032021Predicate)
                 .peek(System.out::println)
+                .flatMap(order -> order.getProducts().stream())
+                .distinct()
                 .collect(Collectors.toList());
     }
 
     static Double exercise8(List<Order> orderList) {
         return orderList.stream()
-                .filter(order -> order.getOrderDate().getMonthValue() == 2 && order.getOrderDate().getYear() == 2021)
+                .filter(order -> order.getOrderDate().getMonthValue()==2)
+                .filter(order -> order.getOrderDate().getYear()==2021)
                 .flatMap(order -> order.getProducts().stream())
                 .mapToDouble(Product::getPrice).sum();
     }
@@ -148,7 +150,7 @@ public class StreamsExercises {
         return orderList.stream()
                 .filter(order -> order.getOrderDate().equals(LocalDate.of(2021, 3, 15)))
                 .flatMap(order -> order.getProducts().stream())
-                .mapToDouble(Product::getPrice).average().orElse(0);
+                .mapToDouble(Product::getPrice).average().getAsDouble();
 
     }
 
