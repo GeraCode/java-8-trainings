@@ -24,7 +24,7 @@ public class StreamsExercises {
     private static final DecimalFormat df = new DecimalFormat("#.##");
 
     static Predicate<Product> productBooksPredicate = p -> p.getCategory().equals("Books");
-    static Predicate<Product> product300Predicate = p ->  p.getPrice() > 300;
+    static Predicate<Product> product300Predicate = p ->  p.getPrice() > 300 || p.getPrice()>30;
     static Predicate<Order> productBabyPredicate = o -> o.getProducts().stream().anyMatch(p -> p.getCategory().equals("Baby"));
     static Predicate<Order> productDate15032021Predicate = order -> order.getOrderDate().isEqual(LocalDate.of(2021, 3, 15));
     static Predicate<Product> productToysPredicate = p -> p.getCategory().equals("Toys");
